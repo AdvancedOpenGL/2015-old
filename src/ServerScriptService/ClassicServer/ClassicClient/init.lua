@@ -1,4 +1,5 @@
-local spawnPlayer = game.ReplicatedStorage:WaitForChild("requestCharacter")
+local replicated = game:GetService("ReplicatedStorage")
+local spawnPlayer = replicated:WaitForChild("requestCharacter")
 
 local module = {}
 
@@ -16,9 +17,9 @@ function module:requestCharacter()
 	respawn(true)
 end
 function module:loadClientAssets(status)
-	local gameData = game.ReplicatedStorage:WaitForChild("getGameData"):InvokeServer()
+	local gameData = replicated:WaitForChild("getGameData"):InvokeServer()
 	local success,response = pcall(function()
-		local gameData = game.ReplicatedStorage:WaitForChild("getGameData"):InvokeServer()
+		local gameData = replicated:WaitForChild("getGameData"):InvokeServer()
 		local assetLoad = 0
 		status(true,"Preloading required assets")
 		game:GetService("ContentProvider"):PreloadAsync(gameData,function(...)
@@ -35,8 +36,6 @@ function module:loadClientAssets(status)
 end
 
 --some setup functions
-local replicated = game:GetService("ReplicatedStorage")
-
 local function createValues()
 	local CoreGuiEnabled = Instance.new("Folder",replicated)
 	CoreGuiEnabled.Name = "CoreGuiEnabled"
@@ -109,6 +108,9 @@ function module:startClient()
 	end
 	for i,v in pairs(script.PlayerScripts:GetChildren()) do
 		task.spawn(require,v)
+	end
+	for i,v in pairs(replicated:WaitForChild("ClientPlugins"):GetChildren()) do
+		task.spawn(require(v))
 	end
 end
 
