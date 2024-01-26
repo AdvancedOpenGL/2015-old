@@ -6,4 +6,4 @@ All of the code written by me is under the [CC0-1.0](https://creativecommons.org
 
 ### ***Neither the CoreGui scripts or colors.lua are owned by me in any way. All rights to those scripts are owned by the original creators***
 
-Colors.lua is under the Mozilla Public License 2.0, more info is in the comments of that script
+[Colors.lua](https://github.com/unlikethesun/2015/blob/main/src/ServerScriptService/ClassicServer/ClassicClient/Tweaks/Colors.lua) was derived from a script made by MaximumADHD and is under the Mozilla Public License 2.0, more info is in the comments of that script
