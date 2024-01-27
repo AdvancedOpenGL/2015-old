@@ -346,7 +346,7 @@ SettingsShield.ZIndex = BASE_Z_INDEX + 2
 
 		-- Shift Lock Controls
 		local ShiftLockText, ShiftLockCheckBox, ShiftLockOverrideText = nil, nil, nil
-		if true then--not IsTouchClient then
+		if not IsTouchClient and game.StarterPlayer.EnableMouseLockOption then
 			ShiftLockText = createTextLabel(UDim2.new(0.5, -6, 0, CurrentYOffset), "Enable Shift Lock Switch:", "ShiftLockText")
 			ShiftLockText.Parent = GameSettingsMenuFrame
 
@@ -996,11 +996,13 @@ do
 		CancelResetButton.MouseButton1Click:Connect(popMenu)
 
 		-- Game Settings Menu Connections
-		ShiftLockCheckBox.MouseButton1Click:Connect(function()
-			IsShiftLockEnabled = not IsShiftLockEnabled
-			ShiftLockCheckBox.Text = IsShiftLockEnabled and "X" or ""
-			game.ReplicatedStorage.shiftlock.Value = IsShiftLockEnabled
-		end)
+		if ShiftLockCheckBox then
+			ShiftLockCheckBox.MouseButton1Click:Connect(function()
+				IsShiftLockEnabled = not IsShiftLockEnabled
+				ShiftLockCheckBox.Text = IsShiftLockEnabled and "X" or ""
+				game.ReplicatedStorage.shiftlock.Value = IsShiftLockEnabled
+			end)
+		end
 		GameSettingsBackButton.MouseButton1Click:Connect(popMenu)
 
 		-- Help Menu Connections
