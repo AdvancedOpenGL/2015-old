@@ -16,6 +16,4 @@ You need Rojo 7 to set this project up, instructions on how-to install it are [h
 3. Open the folder you cloned in VSCode and run "rojo serve"
 4. Connect Roblox studio to Rojo
 
-You should now how the project set up! It is recomended to use VSCode and Rojo to periodically fetch new updates with `git pull`
-
-If you want to, you can use rojo to build the repo into a place file and use it that way
+You should now how the project set up! If you want to, you can use rojo to build the repo into a place file and use it that way
