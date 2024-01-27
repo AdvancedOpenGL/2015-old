@@ -17,6 +17,13 @@
       "$ignoreUnknownInstances": true,
       "$path": "src/ReplicatedStorage"
     },
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "Technology": "Voxel"
+      },
+      "$ignoreUnknownInstances": true
+    },
     "StarterPlayer": {
       "$className": "StarterPlayer",
       "StarterPlayerScripts": {
