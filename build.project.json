@@ -45,7 +45,7 @@
         "$properties": {
           "Technology": "Voxel",
           "Ambient": [0,0,0],
-          "OutdoorAmbient": {"Color3uint8":[127, 127, 127]}
+          "OutdoorAmbient": [0.49803921568,0.49803921568,0.49803921568 ]
         },
         "$ignoreUnknownInstances": true
       },
