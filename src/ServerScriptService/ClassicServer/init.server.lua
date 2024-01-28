@@ -57,9 +57,11 @@ character.OnServerInvoke = function(p)
 		p.Character:Destroy()
 		p.Character = nil
 	end
-	if not p.Character then
-		p:LoadCharacter()
+	p:LoadCharacter()
+	while not p.Character do
+		task.wait()
 	end
+	p.Character.Humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOn
 end
 character.Name = "requestCharacter"
 gameData.Name = "getGameData"

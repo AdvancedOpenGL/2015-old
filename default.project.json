@@ -1,11 +1,18 @@
 {
-  "name": "2015",
+  "name": "blank",
   "tree": {
     "$className": "DataModel",
     "ReplicatedFirst": {
       "$className": "ReplicatedFirst",
       "$ignoreUnknownInstances": true,
       "$path": "src/ReplicatedFirst"
+    },
+    "Players": {
+      "$className": "Players",
+      "$properties": {
+        "CharacterAutoLoads": false
+      },
+      "$ignoreUnknownInstances": true
     },
     "ServerScriptService": {
       "$className": "ServerScriptService",
@@ -20,7 +27,8 @@
     "Lighting": {
       "$className": "Lighting",
       "$properties": {
-        "Technology": "Voxel"
+        "Technology": "Voxel",
+        "Ambient": [0,0,0]
       },
       "$ignoreUnknownInstances": true
     },
@@ -30,6 +38,17 @@
         "$className": "StarterPlayerScripts",
         "$ignoreUnknownInstances": true,
         "$path": "src/StarterPlayer/StarterPlayerScripts"
+      },
+      "$properties": {
+          "GameSettingsAvatar": "R6",
+          "DeathStyle": "ClassicBreakApart"
+      },
+      "$ignoreUnknownInstances": true
+    },
+    "TextChatService": {
+      "$className": "TextChatService",
+      "$properties": {
+        "ChatVersion": "TextChatService"
       },
       "$ignoreUnknownInstances": true
     }

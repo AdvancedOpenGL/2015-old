@@ -1,17 +1,19 @@
 local replicated = game:GetService("ReplicatedStorage")
 local spawnPlayer = replicated:WaitForChild("requestCharacter")
+local players = game:GetService("Players")
+local localplayer = players.LocalPlayer
 
 local module = {}
 
 local function respawn(isAlive)
 	if not isAlive then
-		wait(3)
+		wait(players.RespawnTime)
 	end
 	spawnPlayer:InvokeServer()
-	while not game.Players.LocalPlayer.Character do
+	while not localplayer.Character do
 		task.wait()
 	end
-	game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(respawn)
+	localplayer.Character:WaitForChild("Humanoid").Died:Connect(respawn)
 end
 function module:requestCharacter()
 	respawn(true)
@@ -64,7 +66,7 @@ local function createValues()
 	shiftlock.Name = "shiftlock"
 end
 local function createContainer()
-	local CoreGui = Instance.new("ScreenGui",game.Players.LocalPlayer.PlayerGui)
+	local CoreGui = Instance.new("ScreenGui",localplayer.PlayerGui)
 	CoreGui.Name = "CoreGui"
 	CoreGui.ResetOnSpawn = false
 	CoreGui.DisplayOrder = 76782567826
