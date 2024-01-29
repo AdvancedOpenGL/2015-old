@@ -1,0 +1,7 @@
+{
+    "className": "TextChatService",
+    "properties": {
+        "ChatVersion": "TextChatService"
+    },
+    "ignoreUnknownInstances": true
+  }

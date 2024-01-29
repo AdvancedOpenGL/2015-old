@@ -1,0 +1,8 @@
+{
+    "ignoreUnknownInstances": true,
+    "className": "StarterPlayer",
+    "properties": {
+        "GameSettingsAvatar": "R6",
+        "DeathStyle": "ClassicBreakApart"
+    }
+}

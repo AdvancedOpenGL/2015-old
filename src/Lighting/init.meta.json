@@ -1,0 +1,8 @@
+{
+    "className": "Lighting",
+    "properties": {
+        "Technology": "Voxel",
+        "Ambient": [0,0,0]
+    },
+    "ignoreUnknownInstances": true
+  }

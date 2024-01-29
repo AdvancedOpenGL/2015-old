@@ -2,55 +2,7 @@
   "name": "blank",
   "tree": {
     "$className": "DataModel",
-    "ReplicatedFirst": {
-      "$className": "ReplicatedFirst",
-      "$ignoreUnknownInstances": true,
-      "$path": "src/ReplicatedFirst"
-    },
-    "Players": {
-      "$className": "Players",
-      "$properties": {
-        "CharacterAutoLoads": false
-      },
-      "$ignoreUnknownInstances": true
-    },
-    "ServerScriptService": {
-      "$className": "ServerScriptService",
-      "$ignoreUnknownInstances": true,
-      "$path": "src/ServerScriptService"
-    },
-    "ReplicatedStorage": {
-      "$className": "ReplicatedStorage",
-      "$ignoreUnknownInstances": true,
-      "$path": "src/ReplicatedStorage"
-    },
-    "Lighting": {
-      "$className": "Lighting",
-      "$properties": {
-        "Technology": "Voxel",
-        "Ambient": [0,0,0]
-      },
-      "$ignoreUnknownInstances": true
-    },
-    "StarterPlayer": {
-      "$className": "StarterPlayer",
-      "StarterPlayerScripts": {
-        "$className": "StarterPlayerScripts",
-        "$ignoreUnknownInstances": true,
-        "$path": "src/StarterPlayer/StarterPlayerScripts"
-      },
-      "$properties": {
-          "GameSettingsAvatar": "R6",
-          "DeathStyle": "ClassicBreakApart"
-      },
-      "$ignoreUnknownInstances": true
-    },
-    "TextChatService": {
-      "$className": "TextChatService",
-      "$properties": {
-        "ChatVersion": "TextChatService"
-      },
-      "$ignoreUnknownInstances": true
-    }
+    "$ignoreUnknownInstances": true,
+    "$path": "src"
   }
 }

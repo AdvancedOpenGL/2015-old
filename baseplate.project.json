@@ -1,0 +1,29 @@
+{
+    "name": "baseplate",
+    "tree": {
+      "$className": "DataModel",
+      "$path": "src",
+      "$ignoreUnknownInstances": true,
+      "Workspace": {
+        "$className": "Workspace",
+        "Baseplate": {
+          "$className": "Part",
+          "$properties": {
+            "Size": [512,20,512],
+            "Position": [0,-10,0],
+            "BrickColor": {"BrickColor":199},
+            "Locked": true,
+            "TopSurface": "Studs",
+            "BottomSurface": "Inlet",
+            "Anchored": true
+          }
+        },
+        "$ignoreUnknownInstances": true
+      },
+      "Lighting": {
+        "$properties": {
+          "OutdoorAmbient": [0.49803921568,0.49803921568,0.49803921568 ]
+        }
+      }
+    }
+  }
