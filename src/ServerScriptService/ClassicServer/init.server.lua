@@ -46,11 +46,7 @@ local preloadData = {
 	"rbxassetid://16081139292",
 }
 gameData.OnServerInvoke = function(p)
-	if not calledGui[p.UserId] then
-		calledGui[p.UserId] = true
-		return preloadData
-	end
-	return {}
+	return preloadData
 end
 character.OnServerInvoke = function(p)
 	if p.Character then
