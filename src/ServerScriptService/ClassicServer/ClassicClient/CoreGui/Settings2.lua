@@ -16,7 +16,7 @@ local ContextActionService = game:GetService('ContextActionService')
 --
 local Settings = UserSettings()
 local GameSettings = Settings.GameSettings
-local RbxGuiLibaray = require(script.Parent.Parent.LoadLibrary.RbxGui)
+local RbxGuiLibaray = _G.LoadLibrary(RbxGui)
 
 
 --[[ Script Variables ]]--

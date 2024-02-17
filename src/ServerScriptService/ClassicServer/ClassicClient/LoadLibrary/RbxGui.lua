@@ -29,9 +29,9 @@ local function ScopedConnect(parentInstance, instance, event, signalFunc, syncFu
 	return connection
 end
 
-local function getScreenGuiAncestor(instance)
+local function getLayerCollectorAncestor(instance)
 	local localInstance = instance
-	while localInstance and not localInstance:IsA("ScreenGui") do
+	while localInstance and not localInstance:IsA("LayerCollector") do
 		localInstance = localInstance.Parent
 	end
 	return localInstance
@@ -107,7 +107,6 @@ end
 
 local function cancelSlide(areaSoak)
 	areaSoak.Visible = false
-	if areaSoakMouseMoveCon then areaSoakMouseMoveCon:disconnect() end
 end
 
 t.CreateStyledMessageDialog = function(title, message, style, buttons)
@@ -124,13 +123,13 @@ t.CreateStyledMessageDialog = function(title, message, style, buttons)
 	styleImage.Position = UDim2.new(0,5,0,15)
 	if style == "error" or style == "Error" then
 		styleImage.Size = UDim2.new(0, 71, 0, 71)
-		styleImage.Image = "http://www.roblox.com/asset/?id=42565285"
+		styleImage.Image = "https://www.roblox.com/asset/?id=42565285"
 	elseif style == "notify" or style == "Notify" then
 		styleImage.Size = UDim2.new(0, 71, 0, 71)
-		styleImage.Image = "http://www.roblox.com/asset/?id=42604978"
+		styleImage.Image = "https://www.roblox.com/asset/?id=42604978"
 	elseif style == "confirm" or style == "Confirm" then
 		styleImage.Size = UDim2.new(0, 74, 0, 76)
-		styleImage.Image = "http://www.roblox.com/asset/?id=42557901"
+		styleImage.Image = "https://www.roblox.com/asset/?id=42557901"
 	else
 		return t.CreateMessageDialog(title,message,buttons)
 	end
@@ -266,8 +265,10 @@ t.CreateScrollingDropDownMenu = function(onSelectedCallback, size, position, bas
 		--
 		listMenu.ScrollBarThickness = 0
 		listMenu:TweenSize(UDim2.new(1, -16, 0, 24), Enum.EasingDirection.InOut, Enum.EasingStyle.Sine, 0.15, true, function()
-			listMenu.Visible = false
-			scrollingBackground.Visible = false
+			if not isOpen then
+				listMenu.Visible = false
+				scrollingBackground.Visible = false
+			end
 		end)
 		isOpen = false
 	end
@@ -300,12 +301,22 @@ t.CreateScrollingDropDownMenu = function(onSelectedCallback, size, position, bas
 	end
 
 	dropDownMenu.Close = function()
+		onEntrySelected()
+	end
+
+	dropDownMenu.Reset = function()
+		isOpen = false
 		icon.Rotation = 0
-		scrollingBackground.Size = UDim2.new(1, 0, 0, currentSelectionName.AbsoluteSize.y)
 		listMenu.ScrollBarThickness = 0
 		listMenu.Size = UDim2.new(1, -16, 0, 24)
 		listMenu.Visible = false
 		scrollingBackground.Visible = false
+	end
+
+	dropDownMenu.SetVisible = function(isVisible)
+		if frame then
+			frame.Visible = isVisible
+		end
 	end
 
 	dropDownMenu.UpdateZIndex = function(newZIndexBase)
@@ -385,32 +396,23 @@ t.CreateScrollingDropDownMenu = function(onSelectedCallback, size, position, bas
 			btn.AutoButtonColor = false
 			btn.Parent = listMenu
 
-			if IsTouchClient then
-				btn.TouchTap:connect(function()
-					currentSelectionName.Text = btn.Text
-					onEntrySelected()
-					btn.Font = Enum.Font.SourceSans
-					onSelectedCallback(btn.Text)
-				end)
-			else
-				btn.MouseButton1Click:connect(function()
-					currentSelectionName.Text = btn.Text
-					onEntrySelected()
-					btn.Font = Enum.Font.SourceSans
-					btn.TextColor3 = Color3.new(0.5, 0.5, 0.5)
-					btn.BackgroundColor3 = Color3.new(1, 1, 1)
-					onSelectedCallback(btn.Text)
-				end)
+			btn.MouseButton1Click:connect(function()
+				currentSelectionName.Text = btn.Text
+				onEntrySelected()
+				btn.Font = Enum.Font.SourceSans
+				btn.TextColor3 = Color3.new(0.5, 0.5, 0.5)
+				btn.BackgroundColor3 = Color3.new(1, 1, 1)
+				onSelectedCallback(btn.Text)
+			end)
 
-				btn.MouseEnter:connect(function()
-					btn.TextColor3 = Color3.new(1, 1, 1)
-					btn.BackgroundColor3 = Color3.new(0.75, 0.75, 0.75)
-				end)
-				btn.MouseLeave:connect(function()
-					btn.TextColor3 = Color3.new(0.5, 0.5, 0.5)
-					btn.BackgroundColor3 = Color3.new(1, 1, 1)
-				end)
-			end
+			btn.MouseEnter:connect(function()
+				btn.TextColor3 = Color3.new(1, 1, 1)
+				btn.BackgroundColor3 = Color3.new(0.75, 0.75, 0.75)
+			end)
+			btn.MouseLeave:connect(function()
+				btn.TextColor3 = Color3.new(0.5, 0.5, 0.5)
+				btn.BackgroundColor3 = Color3.new(1, 1, 1)
+			end)
 		end
 	end
 
@@ -463,7 +465,7 @@ t.CreateDropDownMenu = function(items, onSelect, forRoblox, whiteSkin, baseZ)
 		dropDownIcon.Size = UDim2.new(0,16,0,12)
 		dropDownIcon.Position = UDim2.new(1,-17,0.5, -6)
 	else
-		dropDownIcon.Image = "http://www.roblox.com/asset/?id=45732894"
+		dropDownIcon.Image = "https://www.roblox.com/asset/?id=45732894"
 		dropDownIcon.Size = UDim2.new(0,11,0,6)
 		dropDownIcon.Position = UDim2.new(1,-11,0.5, -2)
 	end
@@ -729,7 +731,7 @@ t.CreateDropDownMenu = function(items, onSelect, forRoblox, whiteSkin, baseZ)
 		-- needed to maintain local scope for items in event listeners below
 		local button = choiceButton:clone()
 		if forRoblox then
-			button.RobloxLocked = true
+			--button.RobloxLocked = true
 		end		
 		button.Text = item
 		button.Parent = droppedDownMenu
@@ -773,7 +775,7 @@ t.CreateDropDownMenu = function(items, onSelect, forRoblox, whiteSkin, baseZ)
 		if parent == nil then
 			areaSoak.Parent = nil
 		else
-			areaSoak.Parent = getScreenGuiAncestor(frame)
+			areaSoak.Parent = getLayerCollectorAncestor(frame)
 		end
 	end)
 
@@ -813,57 +815,13 @@ t.GetFontHeight = function(font, fontSize)
 	if font == nil or fontSize == nil then
 		error("Font and FontSize must be non-nil")
 	end
+	
+	local fontSizeInt = tonumber(fontSize.Name:match("%d+")) -- Clever hack to extract the size from the enum itself.
 
-	if font == Enum.Font.Legacy then
-		if fontSize == Enum.FontSize.Size8 then
-			return 12
-		elseif fontSize == Enum.FontSize.Size9 then
-			return 14
-		elseif fontSize == Enum.FontSize.Size10 then
-			return 15
-		elseif fontSize == Enum.FontSize.Size11 then
-			return 17
-		elseif fontSize == Enum.FontSize.Size12 then
-			return 18
-		elseif fontSize == Enum.FontSize.Size14 then
-			return 21
-		elseif fontSize == Enum.FontSize.Size18 then
-			return 27
-		elseif fontSize == Enum.FontSize.Size24 then
-			return 36
-		elseif fontSize == Enum.FontSize.Size36 then
-			return 54
-		elseif fontSize == Enum.FontSize.Size48 then
-			return 72
-		else
-			error("Unknown FontSize")
-		end
-	elseif font == Enum.Font.Arial or font == Enum.Font.ArialBold then
-		if fontSize == Enum.FontSize.Size8 then
-			return 8
-		elseif fontSize == Enum.FontSize.Size9 then
-			return 9
-		elseif fontSize == Enum.FontSize.Size10 then
-			return 10
-		elseif fontSize == Enum.FontSize.Size11 then
-			return 11
-		elseif fontSize == Enum.FontSize.Size12 then
-			return 12
-		elseif fontSize == Enum.FontSize.Size14 then
-			return 14
-		elseif fontSize == Enum.FontSize.Size18 then
-			return 18
-		elseif fontSize == Enum.FontSize.Size24 then
-			return 24
-		elseif fontSize == Enum.FontSize.Size36 then
-			return 36
-		elseif fontSize == Enum.FontSize.Size48 then
-			return 48
-		else
-			error("Unknown FontSize")
-		end
-	else
-		error("Unknown Font " .. font)
+	if font == Enum.Font.Legacy then -- Legacy has a 50% bigger size.
+		return math.ceil(fontSizeInt*1.5)
+	else -- Size is literally just the fontSizeInt
+		return fontSizeInt
 	end
 end
 
@@ -993,7 +951,7 @@ t.CreateSlider = function(steps,width,position)
 		if parent == nil then
 			areaSoak.Parent = nil
 		else
-			areaSoak.Parent = getScreenGuiAncestor(sliderGui)
+			areaSoak.Parent = getLayerCollectorAncestor(sliderGui)
 		end
 	end)
 	
@@ -1094,7 +1052,7 @@ t.CreateSliderNew = function(steps,width,position)
 		if parent == nil then
 			areaSoak.Parent = nil
 		else
-			areaSoak.Parent = getScreenGuiAncestor(sliderGui)
+			areaSoak.Parent = getLayerCollectorAncestor(sliderGui)
 		end
 	end)
 	
@@ -1533,7 +1491,7 @@ t.CreateTrueScrollingFrame = function()
 				mouseDrag.Parent = nil
 				upCon:disconnect()
 			end)
-			mouseDrag.Parent = getScreenGuiAncestor(scrollbar)
+			mouseDrag.Parent = getLayerCollectorAncestor(scrollbar)
 			doScrollUp()
 			wait(0.2)
 			local t = tick()
@@ -1564,7 +1522,7 @@ t.CreateTrueScrollingFrame = function()
 				mouseDrag.Parent = nil
 				downCon:disconnect()
 			end)
-			mouseDrag.Parent = getScreenGuiAncestor(scrollbar)
+			mouseDrag.Parent = getLayerCollectorAncestor(scrollbar)
 			doScrollDown()
 			wait(0.2)
 			local t = tick()
@@ -1609,7 +1567,7 @@ t.CreateTrueScrollingFrame = function()
 				dragCon:disconnect(); dragCon = nil
 				upCon:disconnect(); drag = nil
 			end)
-			mouseDrag.Parent = getScreenGuiAncestor(scrollbar)
+			mouseDrag.Parent = getLayerCollectorAncestor(scrollbar)
 		end
 	end)
 
@@ -1725,7 +1683,7 @@ t.CreateScrollingFrame = function(orderList,scrollStyle)
 	local scrollStamp = 0
 		
 	local scrollDrag = Instance.new("ImageButton")
-	scrollDrag.Image = "http://www.roblox.com/asset/?id=61367186"
+	scrollDrag.Image = "https://www.roblox.com/asset/?id=61367186"
 	scrollDrag.Size = UDim2.new(1, 0, 0, 16)
 	scrollDrag.BackgroundTransparency = 1
 	scrollDrag.Name = "ScrollDrag"
@@ -2068,7 +2026,7 @@ t.CreateScrollingFrame = function(orderList,scrollStyle)
 				mouseDrag.Parent = nil
 				upCon:disconnect()
 			end)
-			mouseDrag.Parent = getScreenGuiAncestor(scrollbar)
+			mouseDrag.Parent = getLayerCollectorAncestor(scrollbar)
 			doScrollUp()
 			wait(0.2)
 			local t = tick()
@@ -2099,7 +2057,7 @@ t.CreateScrollingFrame = function(orderList,scrollStyle)
 				mouseDrag.Parent = nil
 				downCon:disconnect()
 			end)
-			mouseDrag.Parent = getScreenGuiAncestor(scrollbar)
+			mouseDrag.Parent = getLayerCollectorAncestor(scrollbar)
 			doScrollDown()
 			wait(0.2)
 			local t = tick()
@@ -2168,7 +2126,7 @@ t.CreateScrollingFrame = function(orderList,scrollStyle)
 				dragCon:disconnect(); dragCon = nil
 				upCon:disconnect(); drag = nil
 			end)
-			mouseDrag.Parent = getScreenGuiAncestor(scrollbar)
+			mouseDrag.Parent = getLayerCollectorAncestor(scrollbar)
 		end
 	end)
 
@@ -2394,7 +2352,7 @@ local function TransitionTutorialPages(fromPage, toPage, transitionFrame, curren
 	transitionFrame.Visible = true
 	currentPageValue.Value = nil
 
-	local newsize, newPosition
+	local newSize, newPosition
 	if toPage then
 		--Make it visible so it resizes
 		toPage.Visible = true
@@ -2796,13 +2754,14 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 	local SmallThumbnailUrl = nil
 	local LargeThumbnailUrl = nil
 	local BaseUrl = game:GetService("ContentProvider").BaseUrl:lower()
+	local AssetGameUrl = string.gsub(BaseUrl, "www", "assetgame")
 	
 	if useAssetVersionId then
-		LargeThumbnailUrl = BaseUrl .. "Game/Tools/ThumbnailAsset.ashx?fmt=png&wd=420&ht=420&assetversionid="
-		SmallThumbnailUrl = BaseUrl .. "Game/Tools/ThumbnailAsset.ashx?fmt=png&wd=75&ht=75&assetversionid="
+		LargeThumbnailUrl = AssetGameUrl .. "Game/Tools/ThumbnailAsset.ashx?fmt=png&wd=420&ht=420&assetversionid="
+		SmallThumbnailUrl = AssetGameUrl .. "Game/Tools/ThumbnailAsset.ashx?fmt=png&wd=75&ht=75&assetversionid="
 	else
-		LargeThumbnailUrl = BaseUrl .. "Game/Tools/ThumbnailAsset.ashx?fmt=png&wd=420&ht=420&aid="
-		SmallThumbnailUrl = BaseUrl .. "Game/Tools/ThumbnailAsset.ashx?fmt=png&wd=75&ht=75&aid="
+		LargeThumbnailUrl = AssetGameUrl .. "Game/Tools/ThumbnailAsset.ashx?fmt=png&wd=420&ht=420&aid="
+		SmallThumbnailUrl = AssetGameUrl .. "Game/Tools/ThumbnailAsset.ashx?fmt=png&wd=75&ht=75&aid="
 	end
 		
 	local function drillDownSetZIndex(parent, index)
@@ -2998,7 +2957,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 				local cancelImage = Instance.new("ImageLabel")
 				cancelImage.Name = "CancelImage"
 				cancelImage.BackgroundTransparency = 1
-				cancelImage.Image = "http://www.roblox.com/asset/?id=54135717"
+				cancelImage.Image = "https://www.roblox.com/asset/?id=54135717"
 				cancelImage.Position = UDim2.new(0,-2,0,-2)
 				cancelImage.Size = UDim2.new(0,16,0,16)
 				cancelImage.ZIndex = 6
@@ -3200,7 +3159,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 	local function createDropDownMenuButton(parent)
 		local dropDownButton = Instance.new("ImageButton")
 		dropDownButton.Name = "DropDownButton"
-		dropDownButton.Image = "http://www.roblox.com/asset/?id=67581509"
+		dropDownButton.Image = "https://www.roblox.com/asset/?id=67581509"
 		dropDownButton.BackgroundTransparency = 1
 		dropDownButton.Size = UDim2.new(0,16,0,16)
 		dropDownButton.Position = UDim2.new(1,-24,0,6)
@@ -3521,7 +3480,7 @@ t.CreateSetPanel = function(userIdsForSets, objectSelected, dialogClosed, size, 
 
 	populateSetsFrame()
 
-	insertPanelCloseCon = setGui.SetPanel.CancelButton.MouseButton1Click:connect(function()
+	setGui.SetPanel.CancelButton.MouseButton1Click:connect(function()
 		setGui.SetPanel.Visible = false
 		if dialogClosed then dialogClosed() end
 	end)
@@ -3632,24 +3591,24 @@ t.CreateTerrainMaterialSelector = function(size,position)
 	-- we so need a better way to do this
 	for i,v in pairs(materialNames) do
 		materialToImageMap[v] = {}
-		if v == "Grass" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=56563112"
-		elseif v == "Sand" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=62356652"
-		elseif v == "Brick" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=65961537"
-		elseif v == "Granite" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=67532153"
-		elseif v == "Asphalt" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=67532038"
-		elseif v == "Iron" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=67532093"
-		elseif v == "Aluminum" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=67531995"
-		elseif v == "Gold" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=67532118"
-		elseif v == "Plastic (red)" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=67531848"
-		elseif v == "Plastic (blue)" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=67531924"
-		elseif v == "Plank" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=67532015"
-		elseif v == "Log" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=67532051"
-		elseif v == "Gravel" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=67532206"
-		elseif v == "Cinder Block" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=67532103"
-		elseif v == "Stone Wall" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=67531804"
-		elseif v == "Concrete" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=67532059"
-		elseif v == "Water" then materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=81407474"
-		else materialToImageMap[v].Regular = "http://www.roblox.com/asset/?id=66887593" -- fill in the rest here!!
+		if v == "Grass" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=56563112"
+		elseif v == "Sand" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=62356652"
+		elseif v == "Brick" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=65961537"
+		elseif v == "Granite" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=67532153"
+		elseif v == "Asphalt" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=67532038"
+		elseif v == "Iron" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=67532093"
+		elseif v == "Aluminum" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=67531995"
+		elseif v == "Gold" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=67532118"
+		elseif v == "Plastic (red)" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=67531848"
+		elseif v == "Plastic (blue)" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=67531924"
+		elseif v == "Plank" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=67532015"
+		elseif v == "Log" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=67532051"
+		elseif v == "Gravel" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=67532206"
+		elseif v == "Cinder Block" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=67532103"
+		elseif v == "Stone Wall" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=67531804"
+		elseif v == "Concrete" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=67532059"
+		elseif v == "Water" then materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=81407474"
+		else materialToImageMap[v].Regular = "https://www.roblox.com/asset/?id=66887593" -- fill in the rest here!!
 		end
 	end
 
@@ -3752,7 +3711,7 @@ t.CreateTerrainMaterialSelector = function(size,position)
 end
 
 t.CreateLoadingFrame = function(name,size,position)
-	game:GetService("ContentProvider"):Preload("http://www.roblox.com/asset/?id=35238053")
+	game:GetService("ContentProvider"):Preload("https://www.roblox.com/asset/?id=35238053")
 
 	local loadingFrame = Instance.new("Frame")
 	loadingFrame.Name = "LoadingFrame"
@@ -3773,7 +3732,7 @@ t.CreateLoadingFrame = function(name,size,position)
 
 		local loadingGreenBar = Instance.new("ImageLabel")
 		loadingGreenBar.Name = "LoadingGreenBar"
-		loadingGreenBar.Image = "http://www.roblox.com/asset/?id=35238053"
+		loadingGreenBar.Image = "https://www.roblox.com/asset/?id=35238053"
 		loadingGreenBar.Position = UDim2.new(0,0,0,0)
 		loadingGreenBar.Size = UDim2.new(0,0,1,0)
 		loadingGreenBar.Visible = false
@@ -3875,7 +3834,7 @@ t.CreateLoadingFrame = function(name,size,position)
 end
 
 t.CreatePluginFrame = function (name,size,position,scrollable,parent)
-	function createMenuButton(size,position,text,fontsize,name,parent)
+	local function createMenuButton(size,position,text,fontsize,name,parent)
 		local button = Instance.new("TextButton",parent)
 		button.AutoButtonColor = false
 		button.Name = name
@@ -3962,7 +3921,7 @@ t.CreatePluginFrame = function (name,size,position,scrollable,parent)
 		if helpFrame.Visible then
 			helpButton.Selected = true
 			helpButton.BackgroundTransparency = 0
-			local screenGui = getScreenGuiAncestor(helpFrame)
+			local screenGui = getLayerCollectorAncestor(helpFrame)
 			if screenGui then
 				if helpFrame.AbsolutePosition.X + helpFrame.AbsoluteSize.X > screenGui.AbsoluteSize.X then --position on left hand side
 					helpFrame.Position = UDim2.new(0,-5 - helpFrame.AbsoluteSize.X,0,0)
@@ -4094,7 +4053,7 @@ t.CreatePluginFrame = function (name,size,position,scrollable,parent)
 		scrubThree.Position = UDim2.new(0.5,-5,0.5,2)
 		scrubThree.Parent = verticalDragger
 
-		local areaSoak = Instance.new("TextButton",getScreenGuiAncestor(parent))
+		local areaSoak = Instance.new("TextButton",getLayerCollectorAncestor(parent))
 		areaSoak.Name = "AreaSoak"
 		areaSoak.Size = UDim2.new(1,0,1,0)
 		areaSoak.BackgroundTransparency = 1

@@ -97,9 +97,21 @@ local function createContainer()
 	symlink.Name = "symlink"
 	symlink.Value = RobloxGui
 end
-
+local function addFunctions()
+	function _G.LoadLibrary(lib)
+		return require(script.LoadLibrary:FindFirstChild(lib))
+	end
+	local keyToBind = Enum.KeyCode.F8
+	uis.InputBegan:Connect(function(input,ignore)
+		if not ignore and input.KeyCode == keyToBind then
+			CoreGui.RobloxGui.ControlFrame.ToggleDevConsole:Invoke()
+		end
+	end)
+	
+end
 function module:startClient()
 
+	addFunctions()
 	createContainer()
 	createValues()
 	for i,v in pairs(script.Tweaks:GetChildren()) do

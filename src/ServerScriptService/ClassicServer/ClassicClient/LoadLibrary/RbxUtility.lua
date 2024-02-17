@@ -1,7 +1,5 @@
 local t = {}
 
- 
-
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
@@ -45,7 +43,6 @@ local setmetatable = setmetatable
 local pairs = pairs
 local ipairs = ipairs
 local assert = assert
-local Chipmunk = Chipmunk
 
 
 local StringBuilder = {
@@ -571,13 +568,12 @@ t.SelectTerrainRegion = function(regionToSelect, color, selectEmptyCells, select
 	selectionPart.Anchored = true
 	selectionPart.Locked = true
 	selectionPart.CanCollide = false
-	selectionPart.FormFactor = Enum.FormFactor.Custom
 	selectionPart.Size = Vector3.new(4.2,4.2,4.2)
 
 	local selectionBox = Instance.new("SelectionBox")
 
 	-- srs translation from region3 to region3int16
-	function Region3ToRegion3int16(region3)
+	local function Region3ToRegion3int16(region3)
 		local theLowVec = region3.CFrame.p - (region3.Size/2) + Vector3.new(2,2,2)
 		local lowCell = WorldToCellPreferSolid(terrain,theLowVec)
 
@@ -788,30 +784,40 @@ function t.CreateSignal()
 		if type(func) ~= 'function' then
 			error("Argument #1 of connect must be a function, got a "..type(func), 2)
 		end
-		local cn = mBindableEvent.Event:connect(func)
+		local cn = mBindableEvent.Event:Connect(func)
 		mAllCns[cn] = true
 		local pubCn = {}
 		function pubCn:disconnect()
-			cn:disconnect()
+			cn:Disconnect()
 			mAllCns[cn] = nil
 		end
+		pubCn.Disconnect = pubCn.disconnect
+		
 		return pubCn
 	end
+	
 	function this:disconnect()
 		if self ~= this then error("disconnect must be called with `:`, not `.`", 2) end
 		for cn, _ in pairs(mAllCns) do
-			cn:disconnect()
+			cn:Disconnect()
 			mAllCns[cn] = nil
 		end
 	end
+	
 	function this:wait()
 		if self ~= this then error("wait must be called with `:`, not `.`", 2) end
-		return mBindableEvent.Event:wait()
+		return mBindableEvent.Event:Wait()
 	end
+	
 	function this:fire(...)
 		if self ~= this then error("fire must be called with `:`, not `.`", 2) end
 		mBindableEvent:Fire(...)
 	end
+	
+	this.Connect = this.connect
+	this.Disconnect = this.disconnect
+	this.Wait = this.wait
+	this.Fire = this.fire
 
 	return this
 end
@@ -928,6 +934,7 @@ local function Create_PrivImpl(objectType)
 
 		--make the object to mutate
 		local obj = Instance.new(objectType)
+		local parent = nil
 
 		--stored constructor function to be called after other initialization
 		local ctor = nil
@@ -935,7 +942,13 @@ local function Create_PrivImpl(objectType)
 		for k, v in pairs(dat) do
 			--add property
 			if type(k) == 'string' then
-				obj[k] = v
+				if k == 'Parent' then
+					-- Parent should always be set last, setting the Parent of a new object
+					-- immediately makes performance worse for all subsequent property updates.
+					parent = v
+				else
+					obj[k] = v
+				end
 
 
 			--add child
@@ -975,6 +988,10 @@ local function Create_PrivImpl(objectType)
 		--apply constructor function if it exists
 		if ctor then
 			ctor(obj)
+		end
+		
+		if parent then
+			obj.Parent = parent
 		end
 
 		--return the completed object
@@ -1089,29 +1106,3 @@ t.Help =
 --------------------------------------------Documentation Ends----------------------------------------------------------
 
 return t
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

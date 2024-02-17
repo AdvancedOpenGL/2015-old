@@ -66,10 +66,11 @@ end
 character.Name = "requestCharacter"
 gameData.Name = "getGameData"
 
-game.Players.PlayerRemoving:Connect(function(p)
-	calledGui[p.UserId] = nil
-end)
-
+if game.ServerScriptService:FindFirstChild("ServerPlugins") then
+	for i,v in pairs(game.ServerScriptService.ServerPlugins:GetChildren()) do
+		task.spawn(require(v))
+	end
+end
 for i,v in pairs(game.ServerScriptService.ServerPlugins:GetChildren()) do
 	task.spawn(require(v))
 end
